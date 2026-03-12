@@ -70,3 +70,13 @@ npm run dev
 ---
 
 
+## 🔮 Future Scope
+*   **Fully Autonomous RAG:** Connecting the avatar's speech generation directly to municipal vector databases for real-time unscripted answers.
+*   **Edge Deployment:** Optimizing WebRTC streams to operate efficiently on 3G connections in rural areas.
+*   **Voter Identification Verification:** Pairing the C2PA Trust Stack with local biometric devices for remote authenticated polling queries.
+
+## 📄 License
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+---
+*Built with ❤️ for a more connected, transparent democracy.*
