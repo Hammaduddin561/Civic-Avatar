@@ -69,7 +69,7 @@ export default function LiveAvatar({ onClientReady }) {
         
         const avatarData = await avatarClient.current.createStartAvatar({
           quality: AvatarQuality.Low,
-          avatarName: "anna_public_3_20240108",
+          avatarName: "37bfcaa3d63b4ac28da829dc1fb57fb5", // Global fallback ID for free tier WebRTC
           language: 'en'
         });
 
