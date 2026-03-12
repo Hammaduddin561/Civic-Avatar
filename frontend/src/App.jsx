@@ -793,16 +793,21 @@ function ConfigView() {
 
               <div>
                 <label className="block text-sm font-semibold text-slate-700 mb-2">Primary Emotion</label>
-                <select 
-                  value={emotion} 
-                  onChange={(e) => setEmotion(e.target.value)}
-                  className="w-full bg-slate-50 border border-slate-200 rounded-lg p-3 text-sm focus:ring-primary focus:border-primary text-slate-700"
-                >
-                  <option value="FRIENDLY">Friendly</option>
-                  <option value="EXCITED">Excited</option>
-                  <option value="SERIOUS">Serious</option>
-                  <option value="EMPATHETIC">Empathetic</option>
-                </select>
+                <div className="relative">
+                  <select 
+                    value={emotion} 
+                    onChange={(e) => setEmotion(e.target.value)}
+                    className="w-full bg-slate-50 border border-slate-200 rounded-lg p-3 pr-10 text-sm focus:ring-primary focus:border-primary text-slate-700 appearance-none"
+                  >
+                    <option value="FRIENDLY">Friendly</option>
+                    <option value="EXCITED">Excited</option>
+                    <option value="SERIOUS">Serious</option>
+                    <option value="EMPATHETIC">Empathetic</option>
+                  </select>
+                  <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-slate-500">
+                    <span className="material-symbols-outlined text-lg">expand_more</span>
+                  </div>
+                </div>
                 <p className="text-xs text-slate-400 mt-2">Affects the avatar's tone of voice and facial pacing.</p>
               </div>
             </div>
@@ -936,12 +941,17 @@ function SettingsView() {
               
               <div>
                 <label className="block text-sm font-semibold text-slate-700 mb-2">Default Dashboard Language</label>
-                <select value={language} onChange={(e) => setLanguage(e.target.value)} className="w-full max-w-xs bg-slate-50 border border-slate-200 rounded-lg p-3 text-sm focus:ring-primary focus:border-primary text-slate-700">
-                  <option value="en">English (US)</option>
-                  <option value="hi">Hindi (हिंदी)</option>
-                  <option value="bn">Bengali (বাংলা)</option>
-                  <option value="mr">Marathi (मराठी)</option>
-                </select>
+                <div className="relative max-w-xs">
+                  <select value={language} onChange={(e) => setLanguage(e.target.value)} className="w-full bg-slate-50 border border-slate-200 rounded-lg p-3 pr-10 text-sm focus:ring-primary focus:border-primary text-slate-700 appearance-none">
+                    <option value="en">English (US)</option>
+                    <option value="hi">Hindi (हिंदी)</option>
+                    <option value="bn">Bengali (বাংলা)</option>
+                    <option value="mr">Marathi (मराठी)</option>
+                  </select>
+                  <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-slate-500">
+                    <span className="material-symbols-outlined text-lg">expand_more</span>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
