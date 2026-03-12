@@ -259,19 +259,20 @@ function TownhallView() {
         avatarClient.current.on(StreamingEvents.STREAM_READY, (event) => {
           console.log("STREAM_READY fired:", event.detail);
           if (videoRef.current && event.detail) {
-            videoRef.current.srcObject = event.detail;
-            videoRef.current.onloadedmetadata = () => {
+            try {
+              videoRef.current.srcObject = event.detail;
               videoRef.current.play().then(() => {
                  console.log("Video playing successfully");
                  setIsAvatarConnected(true);
-                 // Once it starts playing, we can try to unmute it allowing voice
                  videoRef.current.muted = false;
               }).catch(e => {
                  console.error("Auto-play prevented by browser:", e);
-                 // Fallback: stay muted if browser strict policy enforces it
-                 setConnectionStatus('Click here to start video');
+                 setIsAvatarConnected(true); // Still connected, just waiting for interaction
+                 setConnectionStatus('Click here to enable audio');
               });
-            };
+            } catch (err) {
+              console.error("Error attaching stream to video:", err);
+            }
           }
         });
 
