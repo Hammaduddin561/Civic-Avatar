@@ -283,20 +283,7 @@ function TownhallView() {
 
   return (
     <div className="flex flex-col h-full relative">
-      <header className="absolute top-6 right-8 flex gap-4 z-20 pointer-events-none">
-        <div className="flex items-center gap-2 bg-white/10 backdrop-blur-md px-4 py-2 border border-white/20 rounded-full shadow-lg">
-          <div className="w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.8)] animate-pulse"></div>
-          <span className="text-[10px] font-bold text-white tracking-widest leading-none">OFFICIAL SYNTHETIC MEDIA</span>
-          <span className="material-symbols-outlined text-white text-sm" style={{ fontVariationSettings: "'FILL' 1" }}>verified</span>
-        </div>
-        <div className="hidden lg:flex items-center gap-3 bg-white/10 backdrop-blur-md pl-3 pr-2 py-1.5 border border-white/20 rounded-full shadow-lg pointer-events-auto cursor-pointer group hover:bg-white/20 transition-all">
-          <div className="flex flex-col pr-2 border-r border-white/20">
-            <span className="text-[8px] font-bold text-emerald-300 uppercase leading-none mb-0.5">Trust Stack</span>
-            <span className="text-[10px] font-medium text-white/80 leading-none">C2PA Verified</span>
-          </div>
-          <span className="material-symbols-outlined text-white/50 text-xl group-hover:text-white transition-colors">qr_code_2</span>
-        </div>
-      </header>
+
 
       <div className="flex-1 flex overflow-hidden">
         <div className="w-1/3 flex flex-col bg-[#050510] relative overflow-hidden min-h-0 shrink-0">
@@ -331,12 +318,27 @@ function TownhallView() {
               Slide 4 / 12
             </div>
             <div className="w-full max-w-2xl bg-slate-50 text-slate-800 rounded-xl shadow-2xl overflow-hidden aspect-[16/9] flex flex-col h-full max-h-[600px] border border-slate-200">
-              <div className="h-14 bg-white border-b border-slate-100 flex items-center px-6 shrink-0 justify-between">
-                <div className="flex items-center gap-2">
+              <div className="h-14 bg-white border-b border-slate-100 flex items-center px-6 shrink-0 justify-between relative">
+                <div className="flex items-center gap-2 z-10">
                   <div className="w-2.5 h-2.5 rounded-sm bg-blue-600"></div>
                   <span className="font-bold text-sm tracking-tight text-slate-900">Ministry of IT</span>
                 </div>
-                <div className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Confidential</div>
+                
+                {/* Badges moved here so they don't float over the entire screen */}
+                <div className="absolute right-4 top-1/2 -translate-y-1/2 flex gap-3 z-20 pointer-events-none">
+                  <div className="flex items-center gap-2 bg-slate-900/5 backdrop-blur-md px-3 py-1.5 border border-slate-200/50 rounded-full">
+                    <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></div>
+                    <span className="text-[9px] font-bold text-slate-700 tracking-widest leading-none">OFFICIAL SYNTHETIC MEDIA</span>
+                    <span className="material-symbols-outlined text-slate-400 text-xs" style={{ fontVariationSettings: "'FILL' 1" }}>verified</span>
+                  </div>
+                  <div className="hidden lg:flex items-center gap-3 bg-slate-900/5 backdrop-blur-md pl-3 pr-2 py-1 border border-slate-200/50 rounded-full pointer-events-auto cursor-pointer hover:bg-slate-900/10 transition-all">
+                    <div className="flex flex-col pr-2 border-r border-slate-300">
+                      <span className="text-[7px] font-bold text-emerald-600 uppercase leading-none mb-0.5">Trust Stack</span>
+                      <span className="text-[9px] font-medium text-slate-600 leading-none">C2PA Verified</span>
+                    </div>
+                    <span className="material-symbols-outlined text-slate-400 text-lg hover:text-slate-700 transition-colors">qr_code_2</span>
+                  </div>
+                </div>
               </div>
               <div className="flex-1 p-10 flex flex-col justify-center">
                 <p className="text-sm font-bold text-blue-600 mb-2 tracking-wide uppercase">Strategic Priority 1</p>
