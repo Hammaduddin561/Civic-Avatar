@@ -310,8 +310,8 @@ function TownhallView() {
               LANG: EN/HI [AUTO-SWITCHING]
             </div>
           </div>
-          <div className="relative z-10 flex-1 flex flex-col justify-end p-6">
-            <div className="flex items-center gap-3 mb-4">
+          <div className="absolute inset-x-0 bottom-0 z-20 p-6 bg-gradient-to-t from-black/90 to-transparent pointer-events-none">
+            <div className="flex items-center gap-3 mb-4 pointer-events-auto">
               <div className="w-10 h-10 rounded-full bg-blue-500/20 flex items-center justify-center border border-blue-500/30">
                 <span className="material-symbols-outlined text-blue-400">interpreter_mode</span>
               </div>
@@ -320,7 +320,7 @@ function TownhallView() {
                 <p className="text-blue-300 text-xs font-semibold uppercase tracking-wider">Digital Infrastructure Initiatives</p>
               </div>
             </div>
-            <p className="text-white/90 text-sm leading-relaxed max-w-sm">
+            <p className="text-white/90 text-sm leading-relaxed max-w-sm pointer-events-auto">
               "...and therefore, the deployment of secure, citizen-centric touchpoints across the NCR region remains our absolute priority for Q3."
             </p>
           </div>
