@@ -235,53 +235,72 @@ function TownhallView() {
   const videoRef = useRef(null);
   const avatarClient = useRef(null);
   const [isAvatarConnected, setIsAvatarConnected] = useState(false);
+  const [connectionStatus, setConnectionStatus] = useState('Initializing Sandbox...');
 
   useEffect(() => {
+    let mounted = true;
+
     async function setupAvatar() {
       try {
+        setConnectionStatus('Fetching secure token...');
         const tokenResp = await fetch('http://localhost:8000/api/heygen/token', { method: 'POST' });
         const tokenData = await tokenResp.json();
+        
+        if (!tokenData.data || !tokenData.data.token) {
+           console.error("No token in response:", tokenData);
+           setConnectionStatus('Token extraction failed. Check API Key.');
+           return;
+        }
         const token = tokenData.data.token;
 
+        setConnectionStatus('Connecting to Streaming Engine...');
         avatarClient.current = new StreamingAvatar({ token });
 
         avatarClient.current.on(StreamingEvents.STREAM_READY, (event) => {
-          if (videoRef.current) {
+          console.log("STREAM_READY fired:", event.detail);
+          if (videoRef.current && event.detail) {
             videoRef.current.srcObject = event.detail;
             videoRef.current.onloadedmetadata = () => {
-              videoRef.current.play();
+              videoRef.current.play().catch(console.error);
               setIsAvatarConnected(true);
             };
           }
         });
 
         avatarClient.current.on(StreamingEvents.STREAM_DISCONNECTED, () => {
-          setIsAvatarConnected(false);
-          if (videoRef.current) {
-            videoRef.current.srcObject = null;
+          console.log("STREAM_DISCONNECTED fired");
+          if (mounted) {
+             setIsAvatarConnected(false);
+             setConnectionStatus('Connection lost. Retrying...');
           }
         });
 
-        // Use a generic avatar provided by HeyGen for testing if specific one isn't in scope
-        await avatarClient.current.createStartAvatar({
-          quality: AvatarQuality.Low,
-          avatarName: "josh_lite3_20230714", // default lightweight avatar
-          voice: {
-            rate: 1.0,
-            emotion: "EXCITED"
-          }
+        setConnectionStatus('Waking up synthetic Avatar...');
+        
+        // Use default avatar ID for API testing 
+        // Note: For basic API keys, custom avatars might fail if not created on that exact account
+        const avatarData = await avatarClient.current.createStartAvatar({
+          quality: AvatarQuality.High,
+          avatarName: "josh_lite3_20230714",
+          language: 'en'
         });
+
+        console.log("Avatar created successfully:", avatarData);
 
       } catch (e) {
         console.error("Error setting up avatar:", e);
+        if (mounted) {
+           setConnectionStatus(`Connection Error: ${e.message || 'Unknown'}`);
+        }
       }
     }
 
     setupAvatar();
 
     return () => {
+      mounted = false;
       if (avatarClient.current) {
-        avatarClient.current.stopAvatar();
+        avatarClient.current.stopAvatar().catch(console.error);
       }
     };
   }, []);
@@ -348,16 +367,19 @@ function TownhallView() {
       </header>
 
       <div className="flex-1 flex overflow-hidden">
-        <div className="w-1/3 flex flex-col bg-[#050510] relative overflow-hidden">
+        <div className="w-1/3 flex flex-col bg-[#050510] relative overflow-hidden min-h-0 shrink-0">
           <video 
             ref={videoRef}
             autoPlay 
             playsInline 
-            className="absolute inset-0 w-full h-full object-cover z-0 opacity-80"
+            className="absolute inset-0 w-full h-full object-cover z-0 opacity-100"
           />
           {!isAvatarConnected && (
-             <div className="absolute inset-0 z-0 flex items-center justify-center bg-slate-900 opacity-80">
-               <span className="text-white">Connecting to AI Avatar...</span>
+             <div className="absolute inset-0 z-0 flex items-center justify-center bg-slate-900 opacity-90 backdrop-blur-sm">
+               <div className="flex flex-col items-center gap-4">
+                 <div className="w-8 h-8 rounded-full border-2 border-emerald-500 border-t-transparent animate-spin"></div>
+                 <span className="text-white text-sm font-medium animate-pulse">{connectionStatus}</span>
+               </div>
              </div>
           )}
           <div className="absolute inset-0 z-0 bg-gradient-to-t from-black/80 via-transparent to-black/30"></div>
