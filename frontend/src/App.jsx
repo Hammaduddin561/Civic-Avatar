@@ -261,8 +261,16 @@ function TownhallView() {
           if (videoRef.current && event.detail) {
             videoRef.current.srcObject = event.detail;
             videoRef.current.onloadedmetadata = () => {
-              videoRef.current.play().catch(console.error);
-              setIsAvatarConnected(true);
+              videoRef.current.play().then(() => {
+                 console.log("Video playing successfully");
+                 setIsAvatarConnected(true);
+                 // Once it starts playing, we can try to unmute it allowing voice
+                 videoRef.current.muted = false;
+              }).catch(e => {
+                 console.error("Auto-play prevented by browser:", e);
+                 // Fallback: stay muted if browser strict policy enforces it
+                 setConnectionStatus('Click here to start video');
+              });
             };
           }
         });
@@ -368,11 +376,13 @@ function TownhallView() {
 
       <div className="flex-1 flex overflow-hidden">
         <div className="w-1/3 flex flex-col bg-[#050510] relative overflow-hidden min-h-0 shrink-0">
+          {/* We must include playsInline and muted for autoPlay to bypass browser policy blocks initially */}
           <video 
             ref={videoRef}
             autoPlay 
-            playsInline 
-            className="absolute inset-0 w-full h-full object-cover z-0 opacity-100"
+            playsInline
+            muted
+            className={`absolute inset-0 w-full h-full object-cover z-0 transition-opacity duration-1000 ${isAvatarConnected ? 'opacity-100' : 'opacity-0'}`}
           />
           {!isAvatarConnected && (
              <div className="absolute inset-0 z-0 flex items-center justify-center bg-slate-900 opacity-90 backdrop-blur-sm">
