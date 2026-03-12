@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+import StreamingAvatar, { AvatarQuality, StreamingEvents } from '@heygen/streaming-avatar';
 
 function App() {
   const [activeTab, setActiveTab] = useState('dashboard');
@@ -83,22 +84,239 @@ function App() {
         <main className="flex-1 flex flex-col h-screen bg-slate-50 overflow-hidden">
           {activeTab === 'townhall' && <TownhallView />}
           {activeTab === 'dashboard' && <DashboardView />}
-          {(activeTab === 'service' || activeTab === 'outreach' || activeTab === 'config') && (
-            <div className="flex-1 flex items-center justify-center p-8 text-center text-slate-500">
-              <div>
-                <span className="material-symbols-outlined text-4xl mb-4 text-slate-300">construction</span>
-                <h2 className="text-xl font-bold text-slate-700">Under Construction</h2>
-                <p className="mt-2 text-sm max-w-sm mx-auto">This module is being configured for the hackathon demo. Please switch to Townhall or Dashboard view.</p>
-              </div>
-            </div>
-          )}
+          {activeTab === 'service' && <ServiceView />}
+          {activeTab === 'outreach' && <OutreachView />}
+          {activeTab === 'config' && <ConfigView />}
         </main>
       </div>
     </div>
   );
 }
 
+function ServiceView() {
+  const [desc, setDesc] = React.useState('');
+  const [created, setCreated] = React.useState(null);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!desc.trim()) return;
+
+    try {
+      const res = await fetch('http://localhost:8000/api/service/grievance', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ citizen_id: 'C-8291', description: desc })
+      });
+      const data = await res.json();
+      setCreated(data);
+      setDesc('');
+    } catch(e) {
+      console.error(e);
+    }
+  };
+
+  return (
+    <div className="flex-1 flex flex-col bg-slate-50 p-8 overflow-y-auto">
+      <div className="max-w-3xl mx-auto w-full space-y-8">
+        <div>
+          <h2 className="text-2xl font-bold text-slate-800">1:1 Citizen Support (Service Mode)</h2>
+          <p className="text-slate-500 mt-2">Log a new grievance or service request securely.</p>
+        </div>
+
+        <form onSubmit={handleSubmit} className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm space-y-6">
+          <div>
+            <label className="block text-sm font-bold text-slate-700 mb-2">Issue Description</label>
+            <textarea 
+              value={desc}
+              onChange={e => setDesc(e.target.value)}
+              className="w-full bg-slate-50 border border-slate-200 rounded-lg p-4 text-sm focus:ring-primary focus:border-primary h-32" 
+              placeholder="Describe the issue in detail... (e.g. Broken streetlamp at 4th Ave)"
+            ></textarea>
+          </div>
+          <button type="submit" className="w-full bg-primary text-white font-bold py-3 rounded-lg hover:bg-primary/90 flex items-center justify-center gap-2">
+            <span className="material-symbols-outlined text-[20px]">send</span> SUBMIT GRIEVANCE
+          </button>
+        </form>
+
+        {created && (
+          <div className="bg-emerald-50 border border-emerald-200 text-emerald-800 p-6 rounded-xl flex items-start gap-4">
+            <span className="material-symbols-outlined text-emerald-600 text-3xl">check_circle</span>
+            <div>
+              <h3 className="font-bold text-lg">Grievance Successfully Filed</h3>
+              <p className="mt-1">Ticket ID: <strong className="bg-emerald-100 px-2 py-0.5 rounded">{created.id}</strong></p>
+              <p className="text-sm mt-3 opacity-80">This ticket has been securely logged on the civic database. The AI Avatar system will monitor SLA compliance automatically.</p>
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  )
+}
+
+function OutreachView() {
+  const [campaigns, setCampaigns] = React.useState([]);
+
+  const loadData = () => {
+    fetch('http://localhost:8000/api/outreach/campaigns')
+      .then(r => r.json())
+      .then(d => setCampaigns(d));
+  };
+
+  React.useEffect(() => { loadData(); }, []);
+
+  const triggerCall = async (id) => {
+    await fetch(`http://localhost:8000/api/outreach/campaign/${id}/trigger`, { method: 'POST' });
+    loadData(); // refresh list
+  };
+
+  return (
+    <div className="flex-1 p-8 overflow-y-auto">
+      <div className="max-w-4xl mx-auto space-y-8">
+        <div>
+          <h2 className="text-2xl font-bold text-slate-800">Proactive Campaigns (Outreach Mode)</h2>
+          <p className="text-slate-500 mt-2">Manage outbound AI caller campaigns for public initiatives.</p>
+        </div>
+
+        <div className="grid gap-6">
+          {campaigns.map(c => (
+            <div key={c.id} className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm flex items-center justify-between">
+              <div>
+                <div className="flex items-center gap-3 mb-2">
+                  <span className={`px-2 py-1 rounded text-xs font-bold ${c.status === 'ACTIVE' ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'}`}>{c.status}</span>
+                  <h3 className="text-lg font-bold text-slate-800">{c.title}</h3>
+                </div>
+                <p className="text-sm text-slate-500"><span className="font-semibold">Target:</span> {c.target_demographic} • <span className="font-semibold">Total Calls Made:</span> {c.calls_made}</p>
+              </div>
+              <button 
+                onClick={() => triggerCall(c.id)}
+                className="bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 px-4 py-2 rounded-lg text-sm font-bold flex items-center gap-2 transition-colors"
+              >
+                <span className="material-symbols-outlined text-[18px]">call</span> TRIGGER BATCH
+              </button>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  )
+}
+
 function TownhallView() {
+  const [messages, setMessages] = React.useState([
+    {
+      role: 'citizen',
+      time: '10:42 AM',
+      id: 'A-294',
+      text: 'Kya naya infrastructure mere gaon (Block B) mein network improve karega?'
+    },
+    {
+      role: 'ai',
+      text: 'Yes. Phase 2 of the Digital Goals 2026 includes full spectrum coverage for Block B starting next quarter. (जी हां। 2026 के लक्ष्यों के चरण 2 में अगले महीने से ब्लॉक बी के लिए पूर्ण कवरेज शामिल है।)',
+      source: 'Telecom Strategy Doc (Pg 42)'
+    }
+  ]);
+  const [inputText, setInputText] = React.useState('');
+  const [isTyping, setIsTyping] = React.useState(false);
+
+  // HeyGen Integration
+  const videoRef = useRef(null);
+  const avatarClient = useRef(null);
+  const [isAvatarConnected, setIsAvatarConnected] = useState(false);
+
+  useEffect(() => {
+    async function setupAvatar() {
+      try {
+        const tokenResp = await fetch('http://localhost:8000/api/heygen/token', { method: 'POST' });
+        const tokenData = await tokenResp.json();
+        const token = tokenData.data.token;
+
+        avatarClient.current = new StreamingAvatar({ token });
+
+        avatarClient.current.on(StreamingEvents.STREAM_READY, (event) => {
+          if (videoRef.current) {
+            videoRef.current.srcObject = event.detail;
+            videoRef.current.onloadedmetadata = () => {
+              videoRef.current.play();
+              setIsAvatarConnected(true);
+            };
+          }
+        });
+
+        avatarClient.current.on(StreamingEvents.STREAM_DISCONNECTED, () => {
+          setIsAvatarConnected(false);
+          if (videoRef.current) {
+            videoRef.current.srcObject = null;
+          }
+        });
+
+        // Use a generic avatar provided by HeyGen for testing if specific one isn't in scope
+        await avatarClient.current.createStartAvatar({
+          quality: AvatarQuality.Low,
+          avatarName: "josh_lite3_20230714", // default lightweight avatar
+          voice: {
+            rate: 1.0,
+            emotion: "EXCITED"
+          }
+        });
+
+      } catch (e) {
+        console.error("Error setting up avatar:", e);
+      }
+    }
+
+    setupAvatar();
+
+    return () => {
+      if (avatarClient.current) {
+        avatarClient.current.stopAvatar();
+      }
+    };
+  }, []);
+
+  const handleSend = async () => {
+    if (!inputText.trim()) return;
+    
+    const newMessages = [...messages, {
+      role: 'citizen',
+      time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      id: 'A-' + Math.floor(Math.random() * 900 + 100),
+      text: inputText
+    }];
+    setMessages(newMessages);
+    setInputText('');
+    setIsTyping(true);
+
+    try {
+      const res = await fetch('http://localhost:8000/api/chat/townhall', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ query: inputText, language: 'auto' })
+      });
+      const data = await res.json();
+      
+      setMessages([...newMessages, {
+        role: 'ai',
+        text: data.response_text,
+        source: data.source_citation
+      }]);
+
+      // Speak the response through HeyGen Avatar
+      if (avatarClient.current && isAvatarConnected) {
+        await avatarClient.current.speak({ text: data.response_text });
+      }
+
+    } catch (e) {
+      console.error(e);
+      setMessages([...newMessages, {
+        role: 'ai',
+        text: "I am currently offline or disconnected from the core server. Please check my connection.",
+        source: "System Error"
+      }]);
+    } finally {
+      setIsTyping(false);
+    }
+  };
+
   return (
     <div className="flex flex-col h-full relative">
       <header className="absolute top-6 right-8 flex gap-4 z-20 pointer-events-none">
@@ -117,8 +335,18 @@ function TownhallView() {
       </header>
 
       <div className="flex-1 flex overflow-hidden">
-        <div className="w-1/3 flex flex-col bg-[#050510] relative">
-          <div className="absolute inset-0 z-0 bg-cover bg-center opacity-80" data-alt="Photorealistic human avatar delivering a briefing" style={{ backgroundImage: "url('https://lh3.googleusercontent.com/aida-public/AOfcidUc3h1SbxsJG2YosC_tQGAU7xrL88eDviPGlMaGDehcghS7glkGY9cp0PTu7P88h1mlZALLVOsynbJ6gvhWVebODvhvYDfmFoQMVQl9iwonQN76g3GPWhEH7GdyqU4Wcc0n05X51CuF7NC8X_B7o_4BNEa6utVc8LThsUOg0BPJh4OYBQGugAUccXYMC8TPkEPt10IM6ya_vXmcip1Biuc5VfYZQswMdCzpmfWRmWzmcEALQxnF6kkgymo')" }}></div>
+        <div className="w-1/3 flex flex-col bg-[#050510] relative overflow-hidden">
+          <video 
+            ref={videoRef}
+            autoPlay 
+            playsInline 
+            className="absolute inset-0 w-full h-full object-cover z-0 opacity-80"
+          />
+          {!isAvatarConnected && (
+             <div className="absolute inset-0 z-0 flex items-center justify-center bg-slate-900 opacity-80">
+               <span className="text-white">Connecting to AI Avatar...</span>
+             </div>
+          )}
           <div className="absolute inset-0 z-0 bg-gradient-to-t from-black/80 via-transparent to-black/30"></div>
           <div className="absolute top-4 left-4 z-10 flex flex-col gap-1">
             <div className="bg-black/40 backdrop-blur-sm px-2 py-1 rounded text-[10px] text-white/60 font-semibold tracking-wide">
@@ -186,35 +414,47 @@ function TownhallView() {
           <div className="text-[10px] font-bold text-slate-400 uppercase tracking-widest bg-slate-200/50 px-2 py-1 rounded">24 Participants</div>
         </div>
         <div className="flex-1 overflow-y-auto p-4 space-y-4">
-          <div className="flex flex-col items-start gap-1 max-w-2xl px-2">
-            <span className="text-[10px] font-bold text-slate-400 pl-1 shrink-0">10:42 AM • Citizen ID: A-294</span>
-            <div className="bg-slate-100 px-4 py-2.5 rounded-2xl text-sm text-slate-800 rounded-tl-sm w-fit inline-block">
-              Kya naya infrastructure mere gaon (Block B) mein network improve karega?
-            </div>
-          </div>
-          <div className="flex flex-col items-end gap-1 max-w-2xl self-end ml-auto px-2">
-            <div className="flex items-center gap-2 pr-1 shrink-0 justify-end">
-              <span className="text-[10px] font-bold text-emerald-600 uppercase">Verified AI Response</span>
-              <span className="material-symbols-outlined text-emerald-500 text-[12px]" style={{ fontVariationSettings: "'FILL' 1" }}>verified</span>
-            </div>
-            <div className="bg-primary px-4 py-2.5 rounded-2xl text-sm text-white rounded-tr-sm w-fit block relative">
-              Yes. Phase 2 of the Digital Goals 2026 includes full spectrum coverage for Block B starting next quarter. (जी हां। 2026 के लक्ष्यों के चरण 2 में अगले महीने से ब्लॉक बी के लिए पूर्ण कवरेज शामिल है।)
-              <div className="mt-2.5 pt-2 border-t border-white/20 flex flex-nowrap items-center gap-1.5 w-max">
-                <span className="material-symbols-outlined text-blue-300 text-[14px]">description</span>
-                <span className="text-[9px] font-bold text-blue-200 uppercase tracking-wider relative top-px">Source: Telecom Strategy Doc (Pg 42)</span>
+          {messages.map((msg, idx) => (
+            msg.role === 'citizen' ? (
+              <div key={idx} className="flex flex-col items-start gap-1 max-w-2xl px-2">
+                <span className="text-[10px] font-bold text-slate-400 pl-1 shrink-0">{msg.time} • Citizen ID: {msg.id}</span>
+                <div className="bg-slate-100 px-4 py-2.5 rounded-2xl text-sm text-slate-800 rounded-tl-sm w-fit inline-block">
+                  {msg.text}
+                </div>
+              </div>
+            ) : (
+              <div key={idx} className="flex flex-col items-end gap-1 max-w-2xl self-end ml-auto px-2">
+                <div className="flex items-center gap-2 pr-1 shrink-0 justify-end">
+                  <span className="text-[10px] font-bold text-emerald-600 uppercase">Verified AI Response</span>
+                  <span className="material-symbols-outlined text-emerald-500 text-[12px]" style={{ fontVariationSettings: "'FILL' 1" }}>verified</span>
+                </div>
+                <div className="bg-primary px-4 py-2.5 rounded-2xl text-sm text-white rounded-tr-sm w-fit block relative">
+                  {msg.text}
+                  <div className="mt-2.5 pt-2 border-t border-white/20 flex flex-nowrap items-center gap-1.5 w-max">
+                    <span className="material-symbols-outlined text-blue-300 text-[14px]">description</span>
+                    <span className="text-[9px] font-bold text-blue-200 uppercase tracking-wider relative top-px">Source: {msg.source}</span>
+                  </div>
+                </div>
+              </div>
+            )
+          ))}
+          {isTyping && (
+            <div className="flex flex-col items-end gap-1 max-w-2xl self-end ml-auto px-2">
+              <div className="bg-primary/50 px-4 py-2.5 rounded-2xl text-sm text-white rounded-tr-sm w-fit block italic">
+                Avatar is processing response...
               </div>
             </div>
-          </div>
+          )}
         </div>
         <div className="p-4 bg-slate-50 border-t border-slate-200">
           <div className="max-w-4xl mx-auto flex items-center gap-3">
             <div className="relative flex-1 group">
-              <input type="text" placeholder="Type a question in any language (Hindi, English, Tamil...) OR use voice..." className="w-full bg-white border border-slate-300 focus:border-primary focus:ring-1 focus:ring-primary rounded-full pl-4 pr-12 py-3 text-sm shadow-sm transition-all text-slate-800 placeholder:text-slate-400" />
+              <input type="text" value={inputText} onChange={e => setInputText(e.target.value)} onKeyDown={e => e.key === 'Enter' && handleSend()} placeholder="Type a question in any language (Hindi, English, Tamil...) OR use voice..." className="w-full bg-white border border-slate-300 focus:border-primary focus:ring-1 focus:ring-primary rounded-full pl-4 pr-12 py-3 text-sm shadow-sm transition-all text-slate-800 placeholder:text-slate-400" />
               <button className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 flex items-center justify-center transition-colors">
                 <span className="material-symbols-outlined text-[20px]">mic</span>
               </button>
             </div>
-            <button className="w-12 h-12 rounded-full bg-primary hover:bg-primary/90 text-white flex items-center justify-center shadow-md transition-transform active:scale-95 shrink-0">
+            <button onClick={handleSend} className="w-12 h-12 rounded-full bg-primary hover:bg-primary/90 text-white flex items-center justify-center shadow-md transition-transform active:scale-95 shrink-0">
               <span className="material-symbols-outlined">send</span>
             </button>
           </div>
@@ -225,6 +465,29 @@ function TownhallView() {
 }
 
 function DashboardView() {
+  const [escalations, setEscalations] = React.useState([
+    { id: "#E-9921", issue_type: "Complex Policy Query", wait_time: "02m 45s", severity: "HIGH" },
+    { id: "#E-9922", issue_type: "Emotional Distress", wait_time: "01m 12s", severity: "CRITICAL" },
+    { id: "#E-9925", issue_type: "Dialect Mismatch", wait_time: "05m 30s", severity: "MEDIUM" }
+  ]);
+  
+  const [logs, setLogs] = React.useState([
+    { timestamp: "14:02:12", status: "SYNC_OK", title: "Core Identity Re-Verification", description: "Neural weights successfully validated against Ministry of Electronics DB." },
+    { timestamp: "13:58:45", status: "SYS_UPDATE", title: "Tone Adjustment Module", description: "Formal protocol increased by 12% following user interaction feedback logs." }
+  ]);
+
+  React.useEffect(() => {
+    fetch('http://localhost:8000/api/queue/escalation')
+      .then(r => r.json())
+      .then(data => setEscalations(data))
+      .catch(e => console.error(e));
+      
+    fetch('http://localhost:8000/api/logs/provenance')
+      .then(r => r.json())
+      .then(data => setLogs(data))
+      .catch(e => console.error(e));
+  }, []);
+
   return (
     <div className="flex flex-col h-full">
       <header className="h-16 bg-white border-b border-slate-200 px-8 flex items-center justify-between flex-shrink-0">
@@ -400,27 +663,24 @@ function DashboardView() {
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-100">
-                    <tr className="hover:bg-slate-50 transition-colors">
-                      <td className="px-6 py-4 text-xs font-bold text-slate-700">#E-9921</td>
-                      <td className="px-6 py-4 text-xs font-medium text-slate-600">Complex Policy Query</td>
-                      <td className="px-6 py-4 text-xs font-medium text-slate-600">02m 45s</td>
-                      <td className="px-6 py-4"><span className="px-2 py-0.5 bg-orange-100 text-orange-700 rounded text-[10px] font-bold">HIGH</span></td>
-                      <td className="px-6 py-4"><button className="text-primary text-[10px] font-bold uppercase hover:underline">Intercept</button></td>
-                    </tr>
-                    <tr className="hover:bg-slate-50 transition-colors">
-                      <td className="px-6 py-4 text-xs font-bold text-slate-700">#E-9922</td>
-                      <td className="px-6 py-4 text-xs font-medium text-slate-600">Emotional Distress</td>
-                      <td className="px-6 py-4 text-xs font-medium text-slate-600">01m 12s</td>
-                      <td className="px-6 py-4"><span className="px-2 py-0.5 bg-red-100 text-red-700 rounded text-[10px] font-bold">CRITICAL</span></td>
-                      <td className="px-6 py-4"><button className="text-primary text-[10px] font-bold uppercase hover:underline">Intercept</button></td>
-                    </tr>
-                    <tr className="hover:bg-slate-50 transition-colors">
-                      <td className="px-6 py-4 text-xs font-bold text-slate-700">#E-9925</td>
-                      <td className="px-6 py-4 text-xs font-medium text-slate-600">Dialect Mismatch</td>
-                      <td className="px-6 py-4 text-xs font-medium text-slate-600">05m 30s</td>
-                      <td className="px-6 py-4"><span className="px-2 py-0.5 bg-blue-100 text-blue-700 rounded text-[10px] font-bold">MEDIUM</span></td>
-                      <td className="px-6 py-4"><button className="text-primary text-[10px] font-bold uppercase hover:underline">Intercept</button></td>
-                    </tr>
+                    {escalations.map((esc, idx) => (
+                      <tr key={idx} className="hover:bg-slate-50 transition-colors">
+                        <td className="px-6 py-4 text-xs font-bold text-slate-700">{esc.id}</td>
+                        <td className="px-6 py-4 text-xs font-medium text-slate-600">{esc.issue_type}</td>
+                        <td className="px-6 py-4 text-xs font-medium text-slate-600">{esc.wait_time}</td>
+                        <td className="px-6 py-4">
+                          <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${
+                            esc.severity === 'CRITICAL' ? 'bg-red-100 text-red-700' :
+                            esc.severity === 'HIGH' ? 'bg-orange-100 text-orange-700' :
+                            esc.severity === 'MEDIUM' ? 'bg-blue-100 text-blue-700' :
+                            'bg-slate-100 text-slate-700'
+                          }`}>
+                            {esc.severity}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4"><button className="text-primary text-[10px] font-bold uppercase hover:underline">Intercept</button></td>
+                      </tr>
+                    ))}
                   </tbody>
                 </table>
               </div>
@@ -436,33 +696,30 @@ function DashboardView() {
                 </button>
               </div>
               <div className="flex-1 overflow-y-auto p-4 space-y-4">
-                <div className="flex gap-4">
-                  <div className="flex-shrink-0 w-8 flex flex-col items-center">
-                    <div className="w-2 h-2 rounded-full bg-emerald-500 mt-1.5"></div>
-                    <div className="flex-1 w-px bg-slate-100 my-1"></div>
-                  </div>
-                  <div className="flex-1 pb-4">
-                    <div className="flex justify-between items-center mb-1">
-                      <span className="text-[10px] font-bold text-slate-400">14:02:12</span>
-                      <span className="text-[10px] font-bold text-primary px-1.5 py-0.5 bg-primary/5 rounded">SYNC_OK</span>
+                {logs.map((log, idx) => (
+                  <div key={idx} className="flex gap-4">
+                    <div className="flex-shrink-0 w-8 flex flex-col items-center">
+                      <div className={`w-2 h-2 rounded-full mt-1.5 ${
+                        log.status === 'SYNC_OK' ? 'bg-emerald-500' :
+                        log.status === 'SYS_UPDATE' ? 'bg-slate-300' :
+                        'bg-amber-500'
+                      }`}></div>
+                      {idx !== logs.length - 1 && <div className="flex-1 w-px bg-slate-100 my-1"></div>}
                     </div>
-                    <p className="text-xs font-bold text-slate-700 mb-1">Core Identity Re-Verification</p>
-                    <p className="text-[11px] text-slate-500 leading-relaxed">Neural weights successfully validated against Ministry of Electronics DB.</p>
-                  </div>
-                </div>
-                <div className="flex gap-4">
-                  <div className="flex-shrink-0 w-8 flex flex-col items-center">
-                    <div className="w-2 h-2 rounded-full bg-slate-300 mt-1.5"></div>
-                  </div>
-                  <div className="flex-1">
-                    <div className="flex justify-between items-center mb-1">
-                      <span className="text-[10px] font-bold text-slate-400">13:58:45</span>
-                      <span className="text-[10px] font-bold text-slate-500 px-1.5 py-0.5 bg-slate-100 rounded">SYS_UPDATE</span>
+                    <div className="flex-1 pb-4">
+                      <div className="flex justify-between items-center mb-1">
+                        <span className="text-[10px] font-bold text-slate-400">{log.timestamp}</span>
+                        <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${
+                          log.status === 'SYNC_OK' ? 'text-primary bg-primary/5' :
+                          log.status === 'SYS_UPDATE' ? 'text-slate-500 bg-slate-100' :
+                          'text-amber-600 bg-amber-50'
+                        }`}>{log.status}</span>
+                      </div>
+                      <p className="text-xs font-bold text-slate-700 mb-1">{log.title}</p>
+                      <p className="text-[11px] text-slate-500 leading-relaxed">{log.description}</p>
                     </div>
-                    <p className="text-xs font-bold text-slate-700 mb-1">Tone Adjustment Module</p>
-                    <p className="text-[11px] text-slate-500 leading-relaxed">Formal protocol increased by 12% following user interaction feedback logs.</p>
                   </div>
-                </div>
+                ))}
               </div>
             </div>
           </div>
@@ -483,3 +740,93 @@ function DashboardView() {
 }
 
 export default App;
+
+function ConfigView() {
+  const [rate, setRate] = React.useState(1.0);
+  const [emotion, setEmotion] = React.useState('EXCITED');
+  const [saved, setSaved] = React.useState(false);
+
+  const handleSave = (e) => {
+    e.preventDefault();
+    setSaved(true);
+    setTimeout(() => setSaved(false), 3000);
+  };
+
+  return (
+    <div className="flex-1 p-8 overflow-y-auto bg-slate-50">
+      <div className="max-w-3xl mx-auto space-y-8">
+        <div>
+          <h2 className="text-2xl font-bold text-slate-800">Avatar Configuration</h2>
+          <p className="text-slate-500 mt-2">Adjust the behavioral parameters and vocal settings for the AI Avatar.</p>
+        </div>
+
+        <form onSubmit={handleSave} className="bg-white p-8 rounded-xl border border-slate-200 shadow-sm space-y-8">
+          <div>
+            <h3 className="text-sm font-bold text-slate-700 uppercase tracking-wider mb-5 border-b border-slate-100 pb-2">Vocal Settings (HeyGen Node)</h3>
+            <div className="space-y-6">
+              <div>
+                <div className="flex justify-between mb-2">
+                  <label className="text-sm font-semibold text-slate-700">Speech Rate</label>
+                  <span className="text-sm font-bold text-primary">{rate.toFixed(1)}x</span>
+                </div>
+                <input 
+                  type="range" 
+                  min="0.5" max="2.0" step="0.1" 
+                  value={rate} 
+                  onChange={(e) => setRate(parseFloat(e.target.value))}
+                  className="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-primary"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-semibold text-slate-700 mb-2">Primary Emotion</label>
+                <select 
+                  value={emotion} 
+                  onChange={(e) => setEmotion(e.target.value)}
+                  className="w-full bg-slate-50 border border-slate-200 rounded-lg p-3 text-sm focus:ring-primary focus:border-primary text-slate-700"
+                >
+                  <option value="FRIENDLY">Friendly</option>
+                  <option value="EXCITED">Excited</option>
+                  <option value="SERIOUS">Serious</option>
+                  <option value="EMPATHETIC">Empathetic</option>
+                </select>
+                <p className="text-xs text-slate-400 mt-2">Affects the avatar's tone of voice and facial pacing.</p>
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <h3 className="text-sm font-bold text-slate-700 uppercase tracking-wider mb-5 border-b border-slate-100 pb-2">Cognitive Parameters</h3>
+            <div className="space-y-5">
+              <label className="flex items-start gap-3 cursor-pointer group">
+                <input type="checkbox" defaultChecked className="w-5 h-5 mt-0.5 text-primary border-slate-300 rounded focus:ring-primary cursor-pointer" />
+                <div>
+                  <div className="text-sm font-bold text-slate-700 group-hover:text-primary transition-colors">Enable Safe Mode</div>
+                  <div className="text-xs text-slate-500 mt-0.5 leading-snug">Reroutes all generative outputs through official government glossaries and policy verification databases.</div>
+                </div>
+              </label>
+              <label className="flex items-start gap-3 cursor-pointer group">
+                <input type="checkbox" defaultChecked className="w-5 h-5 mt-0.5 text-primary border-slate-300 rounded focus:ring-primary cursor-pointer" />
+                <div>
+                  <div className="text-sm font-bold text-slate-700 group-hover:text-primary transition-colors">Auto-Detect Dialect</div>
+                  <div className="text-xs text-slate-500 mt-0.5 leading-snug">Automatically switches spoken language based on user's input phrasing.</div>
+                </div>
+              </label>
+            </div>
+          </div>
+
+          <div className="pt-6 flex items-center justify-between border-t border-slate-100">
+            {saved ? (
+              <span className="text-emerald-600 font-bold text-sm flex items-center gap-1 animate-pulse">
+                <span className="material-symbols-outlined text-[18px]">check_circle</span> Settings applied successfully!
+              </span>
+            ) : <span className="text-xs text-slate-400">Settings affect all active Avatar instances.</span>}
+            <button type="submit" className="bg-slate-900 hover:bg-slate-800 text-white font-bold py-3 px-8 rounded-lg transition-colors shadow-md flex items-center gap-2">
+              APPLY CONFIGURATION
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+}
