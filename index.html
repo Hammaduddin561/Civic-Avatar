@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+
+<html class="dark"><head>
+<meta charset="utf-8"/>
+<title>Civic Avatar Desk: Townhall Mode</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "primary": "#256af4",
+            "background-light": "#f5f6f8",
+            "background-dark": "#101622",
+            "cyan-accent": "#00f0ff",
+          },
+          fontFamily: {
+            "display": ["Public Sans", "Inter", "sans-serif"]
+          },
+          borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+        },
+      },
+    }
+  </script>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 font-display min-h-screen flex">
+<aside class="w-64 border-r border-slate-200 dark:border-slate-800 bg-white dark:bg-[#151c2b] flex flex-col justify-between shrink-0 h-screen sticky top-0">
+<div>
+<div class="p-6 flex items-center gap-3">
+<span class="material-symbols-outlined text-cyan-accent text-3xl">account_balance</span>
+<h1 class="text-xl font-bold tracking-tight">Civic Avatar Desk</h1>
+</div>
+<div class="px-6 mb-8">
+<p class="text-xs text-slate-500 dark:text-slate-400 uppercase tracking-wider font-semibold mb-2">Hackathon Prototype</p>
+<p class="text-sm font-medium">India Innovates 2026</p>
+</div>
+<nav class="px-4 space-y-2">
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg bg-primary/20 text-cyan-accent dark:text-cyan-accent font-medium" href="#">
+<span class="material-symbols-outlined">video_camera_front</span>
+          Townhall Mode
+        </a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors" href="#">
+<span class="material-symbols-outlined">support_agent</span>
+          Service Mode
+        </a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors" href="#">
+<span class="material-symbols-outlined">campaign</span>
+          Outreach Mode
+        </a>
+</nav>
+</div>
+<div class="p-6 border-t border-slate-200 dark:border-slate-800">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-slate-300 dark:bg-slate-700 bg-cover bg-center" data-alt="User Profile Picture" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCCEReQtjRUkNHScJ7oxr4phWFekONm5nu-Xwj2fJAALK31V-VZqo5cDad_IUuKLMMCMWF6Mcli1dW80MYr_r713p3I_IXIZlheIbtBXdJjEeryrPh1tKbrT9GJrWllJhHqhvWsA9nO0mAZG4CchrWjKKOQJRbeWgEoRRZApYFrs0G4vWtLcQznVfAZzTNV7zk1EMbMju2K9Tkbo7oDypfIqH0AJE5ngc3fvNIYPyxol29XCV-SdCUNMy1GNoyJNSUmeacmkncUu6ZJ");'></div>
+<div>
+<p class="text-sm font-semibold">Admin User</p>
+<p class="text-xs text-slate-500 dark:text-slate-400">Session Active</p>
+</div>
+</div>
+</div>
+</aside>
+<main class="flex-1 flex flex-col min-h-screen">
+<header class="h-20 border-b border-slate-200 dark:border-slate-800 bg-white/80 dark:bg-[#151c2b]/80 backdrop-blur-md flex items-center justify-between px-8 sticky top-0 z-10">
+<h2 class="text-2xl font-bold tracking-tight">Townhall Briefing</h2>
+<div class="flex items-center gap-4">
+<div class="flex items-center gap-2 bg-green-500/10 text-green-600 dark:text-green-400 px-3 py-1.5 rounded-full border border-green-500/20">
+<span class="material-symbols-outlined text-sm">verified</span>
+<span class="text-sm font-semibold">Official Synthetic Media</span>
+</div>
+<button class="flex items-center gap-2 bg-slate-100 dark:bg-slate-800 px-3 py-1.5 rounded-lg border border-slate-200 dark:border-slate-700 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors">
+<span class="material-symbols-outlined text-sm">qr_code_2</span>
+<span class="text-sm font-medium">Trust Stack (C2PA)</span>
+</button>
+</div>
+</header>
+<div class="flex-1 p-8 grid grid-cols-1 xl:grid-cols-3 gap-8 overflow-y-auto">
+<div class="xl:col-span-2 space-y-8">
+<section class="relative aspect-video rounded-2xl overflow-hidden shadow-2xl border border-slate-200 dark:border-slate-700 bg-slate-200 dark:bg-slate-800 flex items-center justify-center group" data-alt="Photorealistic human-like digital avatar delivering a briefing" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAyRHT_o9yj4dM2k30cF8coJ3myaDJqtiqMTu7_x66zL_dxS5k4qU6TM0I2VjuMNvJNRa7rzAAmDDOxoRS7PDce0BOxlUKPFLnY3xtZeT8k-H5j1JXgNMxbPMpIh4ulN2_4JTxgi0D74QeyVSbHFR3c4bUEYiSruu93pP3dWAuPBL3heLAznJBtQKV8IUtnYalnCWCWFW-3Z6Bvyyh1nDBHC6DPn0ZQw8zZgpZL0SRx6auZse-hs1sWb7hetMYzQZXSBIhq1UJ7xrWO");'>
+<div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent"></div>
+<button class="absolute z-10 w-20 h-20 bg-primary/80 backdrop-blur-sm rounded-full flex items-center justify-center text-white shadow-lg transform group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-4xl">play_arrow</span>
+</button>
+<div class="absolute bottom-6 left-6 right-6 flex justify-between items-end">
+<div>
+<h3 class="text-white text-xl font-bold">Ministerial Digital Avatar</h3>
+<p class="text-slate-300 text-sm">Delivering AI Policy Update</p>
+</div>
+<div class="flex gap-2">
+<button class="w-10 h-10 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center text-white hover:bg-white/30 transition-colors">
+<span class="material-symbols-outlined">volume_up</span>
+</button>
+<button class="w-10 h-10 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center text-white hover:bg-white/30 transition-colors">
+<span class="material-symbols-outlined">closed_caption</span>
+</button>
+</div>
+</div>
+</section>
+<section class="bg-white dark:bg-[#151c2b] rounded-2xl border border-slate-200 dark:border-slate-800 p-6 flex flex-col md:flex-row gap-6 items-center shadow-lg">
+<div class="w-full md:w-1/3 aspect-video bg-slate-200 dark:bg-slate-700 rounded-lg bg-cover bg-center border border-slate-200 dark:border-slate-600" data-alt="Slide deck presentation preview showing goals" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCsMiE5Nera1HM707hwl2CJqBPN6XtL6KzhzKUsI1M0Q5wI2YU4TaKa3PFpgr5dGAZSINWaGTSglVRkNCQds7ONCSpH_useIDe1UkJYVeYA4EIWXLrDTNbe8LPrMGPQb--JvMzpKlUhtee7364OKLVD3Z2Y7l1_VHDoJrGkMqmBWrOdsc10j09Ez6lZ5nc-9VImUHvOAqfBCLtkGSjzOMX2N4ne6nZ5jmNFq8yGRtBa3fhAjhiNP-W1mKJjcNz5ds-HSxzeqggyNsn4");'></div>
+<div class="flex-1">
+<p class="text-sm text-primary font-semibold mb-1 uppercase tracking-wider">Presentation View</p>
+<h3 class="text-xl font-bold mb-2">Digital Infrastructure Goals 2026</h3>
+<p class="text-slate-500 dark:text-slate-400 text-sm mb-4">Slide 4 of 12: Expansion of rural broadband connectivity under the new mandate.</p>
+<button class="bg-primary hover:bg-primary/90 text-white px-5 py-2 rounded-lg font-medium transition-colors">
+               View Full Deck
+             </button>
+</div>
+</section>
+</div>
+<div class="xl:col-span-1 flex flex-col h-[calc(100vh-8rem)]">
+<div class="bg-white dark:bg-[#151c2b] rounded-t-2xl border-t border-l border-r border-slate-200 dark:border-slate-800 p-4 border-b">
+<div class="flex items-center justify-between">
+<h3 class="font-bold text-lg flex items-center gap-2">
+<span class="material-symbols-outlined text-red-500">fiber_manual_record</span>
+               Live Q&amp;A
+             </h3>
+<span class="text-xs bg-slate-100 dark:bg-slate-800 px-2 py-1 rounded text-slate-500 dark:text-slate-400">1,204 Viewers</span>
+</div>
+</div>
+<div class="flex-1 bg-white/50 dark:bg-[#151c2b]/50 border-l border-r border-slate-200 dark:border-slate-800 overflow-y-auto p-4 space-y-4">
+<div class="flex flex-col gap-1 items-start">
+<div class="bg-slate-200 dark:bg-slate-800 text-slate-900 dark:text-slate-100 p-3 rounded-2xl rounded-tl-sm max-w-[85%] shadow-sm">
+<p class="text-sm">What is the timeline for the 5G rollout in tier 3 cities?</p>
+</div>
+<span class="text-xs text-slate-500 ml-1">Citizen402 • 2m ago</span>
+</div>
+<div class="flex flex-col gap-1 items-end">
+<div class="bg-primary/10 border border-primary/20 text-slate-900 dark:text-slate-100 p-3 rounded-2xl rounded-tr-sm max-w-[85%] shadow-sm">
+<p class="text-sm mb-2">The phase 2 rollout for tier 3 cities is scheduled to begin in Q3 2025, targeting 80% coverage by early 2026.</p>
+<a class="inline-flex items-center gap-1 text-xs text-primary bg-primary/10 px-2 py-1 rounded hover:bg-primary/20 transition-colors" href="#">
+<span class="material-symbols-outlined text-[14px]">policy</span>
+                 Source: Min. of Telecom Doc #A-2024
+               </a>
+</div>
+<span class="text-xs text-slate-500 mr-1">Avatar Desk • 1m ago</span>
+</div>
+<div class="flex flex-col gap-1 items-start">
+<div class="bg-slate-200 dark:bg-slate-800 text-slate-900 dark:text-slate-100 p-3 rounded-2xl rounded-tl-sm max-w-[85%] shadow-sm">
+<p class="text-sm font-sans" dir="ltr">डिजिटल साक्षरता कार्यक्रम के लिए बजट क्या है?</p>
+<p class="text-xs text-slate-500 mt-1 italic">Translated: What is the budget for the digital literacy program?</p>
+</div>
+<span class="text-xs text-slate-500 ml-1">Priya_R • Just now</span>
+</div>
+<div class="flex flex-col gap-1 items-end">
+<div class="bg-primary/10 border border-primary/20 text-slate-900 dark:text-slate-100 p-3 rounded-2xl rounded-tr-sm max-w-[85%] shadow-sm">
+<p class="text-sm font-sans mb-2" dir="ltr">राष्ट्रीय डिजिटल साक्षरता मिशन के तहत इस वर्ष 500 करोड़ रुपये आवंटित किए गए हैं।</p>
+<p class="text-xs text-slate-500 mt-1 italic mb-2">Translated: Under the National Digital Literacy Mission, Rs 500 crore has been allocated this year.</p>
+<a class="inline-flex items-center gap-1 text-xs text-primary bg-primary/10 px-2 py-1 rounded hover:bg-primary/20 transition-colors" href="#">
+<span class="material-symbols-outlined text-[14px]">account_balance_wallet</span>
+                 Source: Budget Report 2025-26
+               </a>
+</div>
+<span class="text-xs text-slate-500 mr-1">Avatar Desk • Just now</span>
+</div>
+</div>
+<div class="bg-white dark:bg-[#151c2b] rounded-b-2xl border-b border-l border-r border-slate-200 dark:border-slate-800 p-4">
+<div class="relative flex items-center">
+<input class="w-full bg-slate-100 dark:bg-slate-800 border-none rounded-full py-3 pl-4 pr-12 text-sm focus:ring-2 focus:ring-primary dark:text-slate-100 placeholder-slate-500" placeholder="Ask a question in English or Hindi..." type="text"/>
+<button class="absolute right-2 w-8 h-8 flex items-center justify-center text-slate-500 hover:text-primary transition-colors">
+<span class="material-symbols-outlined">mic</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+</main>
+</body></html>
