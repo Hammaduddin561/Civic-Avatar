@@ -4,6 +4,15 @@ import StreamingAvatar, { AvatarQuality, StreamingEvents } from '@heygen/streami
 function App() {
   const [activeTab, setActiveTab] = useState('dashboard');
 
+  useEffect(() => {
+    const theme = localStorage.getItem('civic_theme') || 'system';
+    if (theme === 'dark' || (theme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+  }, []);
+
   return (
     <div className="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 antialiased min-h-screen">
       <div className="flex h-screen overflow-hidden">
@@ -837,11 +846,62 @@ function ConfigView() {
 
 function SettingsView() {
   const [saved, setSaved] = React.useState(false);
+  const [theme, setTheme] = React.useState(localStorage.getItem('civic_theme') || 'system');
+  const [language, setLanguage] = React.useState(localStorage.getItem('civic_language') || 'en');
+  const [escalationAlerts, setEscalationAlerts] = React.useState(localStorage.getItem('civic_escalation_alerts') === 'true');
+  const [dailyDigest, setDailyDigest] = React.useState(localStorage.getItem('civic_daily_digest') === 'true');
 
   const handleSave = (e) => {
     e.preventDefault();
+    localStorage.setItem('civic_theme', theme);
+    localStorage.setItem('civic_language', language);
+    localStorage.setItem('civic_escalation_alerts', escalationAlerts);
+    localStorage.setItem('civic_daily_digest', dailyDigest);
+
+    if (theme === 'dark' || (theme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+
+    if (escalationAlerts && Notification.permission !== 'granted') {
+      Notification.requestPermission();
+    }
+
     setSaved(true);
     setTimeout(() => setSaved(false), 3000);
+  };
+
+  const handleClearCache = () => {
+    if (window.confirm('Are you sure you want to clear the local storage cache? This will reset all your preferences.')) {
+      localStorage.clear();
+      window.location.reload();
+    }
+  };
+
+  const handleExportCSV = async () => {
+    try {
+      const res = await fetch('http://localhost:8000/api/logs/provenance');
+      const data = await res.json();
+      if (data.length === 0) {
+        alert('No logs available to export.');
+        return;
+      }
+      const headers = Object.keys(data[0]).join(',');
+      const rows = data.map(obj => Object.values(obj).map(v => `"${v}"`).join(',')).join('\\n');
+      const csv = `${headers}\\n${rows}`;
+      const blob = new Blob([csv], { type: 'text/csv' });
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.setAttribute('hidden', '');
+      a.setAttribute('href', url);
+      a.setAttribute('download', `provenance_audit_logs_${new Date().getTime()}.csv`);
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+    } catch (e) {
+      alert('Export failed. Check backend connection.');
+    }
   };
 
   return (
@@ -860,15 +920,15 @@ function SettingsView() {
                 <label className="block text-sm font-semibold text-slate-700 mb-2">Display Theme</label>
                 <div className="flex gap-4">
                   <label className="flex items-center gap-2 cursor-pointer">
-                    <input type="radio" name="theme" value="light" defaultChecked className="text-primary focus:ring-primary" />
+                    <input type="radio" name="theme" value="light" checked={theme === 'light'} onChange={(e) => setTheme(e.target.value)} className="text-primary focus:ring-primary" />
                     <span className="text-sm text-slate-700">Light Mode</span>
                   </label>
                   <label className="flex items-center gap-2 cursor-pointer">
-                    <input type="radio" name="theme" value="dark" className="text-primary focus:ring-primary" />
+                    <input type="radio" name="theme" value="dark" checked={theme === 'dark'} onChange={(e) => setTheme(e.target.value)} className="text-primary focus:ring-primary" />
                     <span className="text-sm text-slate-700">Dark Mode</span>
                   </label>
                   <label className="flex items-center gap-2 cursor-pointer">
-                    <input type="radio" name="theme" value="system" className="text-primary focus:ring-primary" />
+                    <input type="radio" name="theme" value="system" checked={theme === 'system'} onChange={(e) => setTheme(e.target.value)} className="text-primary focus:ring-primary" />
                     <span className="text-sm text-slate-700">System Default</span>
                   </label>
                 </div>
@@ -876,7 +936,7 @@ function SettingsView() {
               
               <div>
                 <label className="block text-sm font-semibold text-slate-700 mb-2">Default Dashboard Language</label>
-                <select className="w-full max-w-xs bg-slate-50 border border-slate-200 rounded-lg p-3 text-sm focus:ring-primary focus:border-primary text-slate-700">
+                <select value={language} onChange={(e) => setLanguage(e.target.value)} className="w-full max-w-xs bg-slate-50 border border-slate-200 rounded-lg p-3 text-sm focus:ring-primary focus:border-primary text-slate-700">
                   <option value="en">English (US)</option>
                   <option value="hi">Hindi (हिंदी)</option>
                   <option value="bn">Bengali (বাংলা)</option>
@@ -895,7 +955,7 @@ function SettingsView() {
                   <div className="text-xs text-slate-500 mt-0.5">Receive browser notifications for CRITICAL human escalation queue items.</div>
                 </div>
                 <div className="relative">
-                  <input type="checkbox" defaultChecked className="sr-only peer" />
+                  <input type="checkbox" checked={escalationAlerts} onChange={(e) => setEscalationAlerts(e.target.checked)} className="sr-only peer" />
                   <div className="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-500"></div>
                 </div>
               </label>
@@ -906,7 +966,7 @@ function SettingsView() {
                   <div className="text-xs text-slate-500 mt-0.5">Summary of grievances resolved and campaign outreach metrics.</div>
                 </div>
                 <div className="relative">
-                  <input type="checkbox" className="sr-only peer" />
+                  <input type="checkbox" checked={dailyDigest} onChange={(e) => setDailyDigest(e.target.checked)} className="sr-only peer" />
                   <div className="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-500"></div>
                 </div>
               </label>
@@ -916,10 +976,10 @@ function SettingsView() {
           <div>
             <h3 className="text-sm font-bold text-slate-700 uppercase tracking-wider mb-5 border-b border-slate-100 pb-2">Security & Data</h3>
             <div className="space-y-4">
-              <button type="button" className="text-sm text-red-600 hover:text-red-700 font-bold flex items-center gap-1 transition-colors">
+              <button type="button" onClick={handleClearCache} className="text-sm text-red-600 hover:text-red-700 font-bold flex items-center gap-1 transition-colors">
                 <span className="material-symbols-outlined text-[18px]">delete_forever</span> Clear Local Storage Cache
               </button>
-              <button type="button" className="text-sm text-slate-600 hover:text-slate-800 font-bold flex items-center gap-1 transition-colors">
+              <button type="button" onClick={handleExportCSV} className="text-sm text-slate-600 hover:text-slate-800 font-bold flex items-center gap-1 transition-colors">
                 <span className="material-symbols-outlined text-[18px]">download</span> Export Audit Logs (CSV)
               </button>
             </div>
