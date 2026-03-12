@@ -69,12 +69,4 @@ npm run dev
 
 ---
 
-## 🎮 Hackathon Demo Usage
-Once both servers are running, access the application at `http://localhost:5173`. 
 
-1. **Dashboard:** View simulated human-in-the-loop escalation queues and real-time backend logs. Wait a few seconds for the HeyGen Avatar to connect and initialize on the left panel.
-2. **Townhall:** Navigate to the Townhall tab to see the live public broadcast UI. Type an inquiry in the chatbox (e.g., "What are the new IT goals?") to trigger an API request to the backend and see a simulated RAG response.
-3. **Settings:** Open the Settings tab to test updating persistent database configurations (System UI and Avatar Logic).
-
-## 🏆 Submission For
-**India Innovates 2026** - Digital Democracy & E-Governance Track.
