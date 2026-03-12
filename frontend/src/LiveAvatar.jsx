@@ -68,8 +68,8 @@ export default function LiveAvatar({ onClientReady }) {
         setConnectionStatus('Waking up synthetic Avatar...');
         
         const avatarData = await avatarClient.current.createStartAvatar({
-          quality: AvatarQuality.High,
-          avatarName: "josh_lite3_20230714",
+          quality: AvatarQuality.Low,
+          avatarName: "anna_public_3_20240108",
           language: 'en'
         });
 
