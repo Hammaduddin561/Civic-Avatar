@@ -1,54 +1,80 @@
-# Civic Avatar Platform 🏛️🤖
+# 🏛️ Civic Avatar Platform 
 
-*A "Trust-by-Design" AI Communications Network built for the India Innovates 2026 Hackathon.*
+*A "Trust-by-Design" AI communications network for the India Innovates 2026 Hackathon.*
 
-## Overview
-The Digital Democracy initiative requires a secure, citizen-centric touchpoint capable of handling live municipal inquiries across multiple dialects. The **Civic Avatar Platform** solves this by providing verifiable, photorealistic AI avatars for broadcasting, outreach, and 1:1 service. 
+[![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)](https://reactjs.org/)
+[![FastAPI](https://img.shields.io/badge/fastapi-109989?style=for-the-badge&logo=FASTAPI&logoColor=white)](https://fastapi.tiangolo.com/)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
+[![HeyGen API](https://img.shields.io/badge/HeyGen-API-purple?style=for-the-badge)](https://heygen.com/)
 
-This repository contains the full-stack hackathon submission, consisting of:
-1. **Frontend (React + Vite + Tailwind CSS):** A premium, dark-mode "Townhall Broadcast View" and an "Adhikari Operations Command Center" dashboard generated using Stitch.
-2. **Backend (Python FastAPI):** A lightweight API simulating the NLP backend, RAG pipelines, C2PA provenance tracking, and human-in-the-loop escalation queues.
+---
 
-## Feature Architecture
+## 📖 The Problem
+Municipalities and state governments face significant challenges in citizen communication:
+1. **Multilingual Accessibility:** India requires dynamic, real-time translations across dozens of dialects.
+2. **Trust & Verification:** In the age of deepfakes, citizens struggle to verify official government communications.
+3. **Scale:** Human operators cannot handle 24/7 concurrent inquiries during crisis events or major policy rollouts.
 
-*   **Townhall Mode:** Broadcasts announcements and hosts live Q&A. The AI avatar pulls verified answers from official strategy documents with explicitly cited sources.
-*   **Adhikari Command Center:** A master dashboard for officials to visually prioritize queue hold times, adjust Avatar "Behavior Configurations" (e.g., Response Formality, Cognitive Load), and verify the cryptographic integrity of Neural Weights via "Provenance Logs."
-*   **Trust Stack Integration:** Simulated C2PA standard tracking ensures outputs are marked as "Verified AI Responses."
+## 💡 Our Solution
+The **Civic Avatar Platform** is a full-stack, WebRTC-enabled dashboard that deploys **verifiable, photorealistic AI avatars** as a single source of truth for citizen interactions. It provides a secure touchpoint capable of handling live municipal inquiries across multiple dialects with built-in cryptographic trust markers.
 
-## Technologies Used
-*   **Frontend:** React (Vite), Tailwind CSS, Google Material Symbols (Icons).
-*   **Backend:** Python 3, FastAPI, Uvicorn, Pydantic.
-*   **Design Generation:** Google GenAI 'Stitch' Application for UI component rendering.
+### ✨ Key Features
 
-## How to Run Locally
+*   📺 **Townhall Broadcast View:** A public-facing interface where an interactive, live AI avatar (powered by the HeyGen Streaming API) broadcasts announcements and hosts live Q&A. The AI pulls verified answers from official strategy documents with explicitly cited sources.
+*   🎛️ **Adhikari Command Center:** A master dashboard for officials to visually prioritize queue hold times, manage active escalations, and monitor system performance.
+*   ⚙️ **Dynamic Avatar Configuration:** An interactive settings module allowing operators to adjust the Avatar's "Behavior Configurations" (e.g., Response Formality, Cognitive Load, Regional Dialect Focus) and UI Appearance directly from the browser.
+*   🔐 **C2PA Trust Stack Integration:** Simulated cryptographic tracking ensures all avatar outputs are marked and visually verified as "Official Synthetic Media."
 
-This application contains 2 distinct services that must be run simultaneously.
+---
 
-### 1. Start the React Frontend
-Open your terminal and navigate to the UI folder:
+## 🛠️ Technical Architecture
+
+This project is separated into a robust backend API and a dynamic frontend UI:
+
+*   **Frontend Data & Streaming:** React + Vite, styled with TailwindCSS. Integrates the `@heygen/streaming-avatar` SDK for real-time, low-latency WebRTC video connections.
+*   **Backend Logic:** Python FastAPI utilizing SQLAlchemy and SQLite for persistent storage of configuration states, grievance queues, and provenance logs. Serves as a secure proxy to generate HeyGen access tokens.
+*   **Design Generation:** Initial UI components scaffolded using Google's GenAI 'Stitch' Application framework.
+
+---
+
+## 🚀 How to Run Locally
+
+You must run both the Frontend and Backend servers simultaneously to experience the full platform.
+
+### 1. Start the Backend API (FastAPI)
+The backend manages the database, mocked NLP endpoints, and secure token generation for the avatar stream.
+
+```bash
+cd backend
+python -m venv venv
+
+# Activate virtual environment
+# Windows: .\venv\Scripts\activate
+# Mac/Linux: source venv/bin/activate
+
+pip install -r requirements.txt
+python -m uvicorn main:app --port 8000 --reload
+```
+*The Backend API will launch at `http://localhost:8000`. You can view interactive API documentation at `http://localhost:8000/docs`.*
+
+### 2. Start the Frontend UI (React/Vite)
+Open a **new terminal window**. The frontend requires the backend to be running to fetch its HeyGen API token and database statuses.
 
 ```bash
 cd frontend
 npm install
 npm run dev
 ```
-The Frontend will launch at **http://localhost:5173**.
+*The Frontend Dashboard will launch at `http://localhost:5173`.*
 
-### 2. Start the FastAPI Backend
-Open a *second* terminal and navigate to the backend folder:
+---
 
-```bash
-cd backend
-python -m venv venv
-# Activate virtual environment
-# Windows: .\venv\Scripts\activate
-# Mac/Linux: source venv/bin/activate
-pip install -r requirements.txt
-python -m uvicorn main:app --port 8000 --reload
-```
-The Backend APIs will launch at **http://localhost:8000**.
-*(Note: You can view the automatic backend API documentation at `http://localhost:8000/docs`)*
+## 🎮 Hackathon Demo Usage
+Once both servers are running, access the application at `http://localhost:5173`. 
 
-## Hackathon Usage
-Once both servers are running, switch between the **Townhall** and **Dashboard** states on the sidebar at `http://localhost:5173`. 
-Typing an inquiry in the Townhall chatbox will successfully post to the `8000` port and return a simulated RAG response. The Command Center table logs are heavily mock-data driven and also natively fetched from the Python environment!
+1. **Dashboard:** View simulated human-in-the-loop escalation queues and real-time backend logs. Wait a few seconds for the HeyGen Avatar to connect and initialize on the left panel.
+2. **Townhall:** Navigate to the Townhall tab to see the live public broadcast UI. Type an inquiry in the chatbox (e.g., "What are the new IT goals?") to trigger an API request to the backend and see a simulated RAG response.
+3. **Settings:** Open the Settings tab to test updating persistent database configurations (System UI and Avatar Logic).
+
+## 🏆 Submission For
+**India Innovates 2026** - Digital Democracy & E-Governance Track.
