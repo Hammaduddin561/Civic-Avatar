@@ -61,7 +61,10 @@ function App() {
             <div className="pt-8 pb-4 px-3">
               <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Administration</p>
             </div>
-            <button className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-slate-600 hover:bg-slate-50 font-medium text-sm transition-colors">
+            <button 
+              onClick={() => setActiveTab('settings')}
+              className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg font-medium text-sm transition-colors ${activeTab === 'settings' ? 'bg-primary text-white' : 'text-slate-600 hover:bg-slate-50'}`}
+            >
               <span className="material-symbols-outlined text-[20px]">settings</span> Settings
             </button>
           </nav>
@@ -87,6 +90,7 @@ function App() {
           {activeTab === 'service' && <ServiceView />}
           {activeTab === 'outreach' && <OutreachView />}
           {activeTab === 'config' && <ConfigView />}
+          {activeTab === 'settings' && <SettingsView />}
         </main>
       </div>
     </div>
@@ -823,6 +827,112 @@ function ConfigView() {
             ) : <span className="text-xs text-slate-400">Settings affect all active Avatar instances.</span>}
             <button type="submit" className="bg-slate-900 hover:bg-slate-800 text-white font-bold py-3 px-8 rounded-lg transition-colors shadow-md flex items-center gap-2">
               APPLY CONFIGURATION
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+}
+
+function SettingsView() {
+  const [saved, setSaved] = React.useState(false);
+
+  const handleSave = (e) => {
+    e.preventDefault();
+    setSaved(true);
+    setTimeout(() => setSaved(false), 3000);
+  };
+
+  return (
+    <div className="flex-1 p-8 overflow-y-auto bg-slate-50">
+      <div className="max-w-3xl mx-auto space-y-8">
+        <div>
+          <h2 className="text-2xl font-bold text-slate-800">System Settings</h2>
+          <p className="text-slate-500 mt-2">Manage global application preferences and administrative controls.</p>
+        </div>
+
+        <form onSubmit={handleSave} className="bg-white p-8 rounded-xl border border-slate-200 shadow-sm space-y-8">
+          <div>
+            <h3 className="text-sm font-bold text-slate-700 uppercase tracking-wider mb-5 border-b border-slate-100 pb-2">Appearance & Localization</h3>
+            <div className="space-y-6">
+              <div>
+                <label className="block text-sm font-semibold text-slate-700 mb-2">Display Theme</label>
+                <div className="flex gap-4">
+                  <label className="flex items-center gap-2 cursor-pointer">
+                    <input type="radio" name="theme" value="light" defaultChecked className="text-primary focus:ring-primary" />
+                    <span className="text-sm text-slate-700">Light Mode</span>
+                  </label>
+                  <label className="flex items-center gap-2 cursor-pointer">
+                    <input type="radio" name="theme" value="dark" className="text-primary focus:ring-primary" />
+                    <span className="text-sm text-slate-700">Dark Mode</span>
+                  </label>
+                  <label className="flex items-center gap-2 cursor-pointer">
+                    <input type="radio" name="theme" value="system" className="text-primary focus:ring-primary" />
+                    <span className="text-sm text-slate-700">System Default</span>
+                  </label>
+                </div>
+              </div>
+              
+              <div>
+                <label className="block text-sm font-semibold text-slate-700 mb-2">Default Dashboard Language</label>
+                <select className="w-full max-w-xs bg-slate-50 border border-slate-200 rounded-lg p-3 text-sm focus:ring-primary focus:border-primary text-slate-700">
+                  <option value="en">English (US)</option>
+                  <option value="hi">Hindi (हिंदी)</option>
+                  <option value="bn">Bengali (বাংলা)</option>
+                  <option value="mr">Marathi (मराठी)</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <h3 className="text-sm font-bold text-slate-700 uppercase tracking-wider mb-5 border-b border-slate-100 pb-2">Notifications & Alerts</h3>
+            <div className="space-y-4">
+              <label className="flex items-center justify-between cursor-pointer">
+                <div>
+                  <div className="text-sm font-bold text-slate-700">Crucial Escalations Alerts</div>
+                  <div className="text-xs text-slate-500 mt-0.5">Receive browser notifications for CRITICAL human escalation queue items.</div>
+                </div>
+                <div className="relative">
+                  <input type="checkbox" defaultChecked className="sr-only peer" />
+                  <div className="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-500"></div>
+                </div>
+              </label>
+
+              <label className="flex items-center justify-between cursor-pointer">
+                <div>
+                  <div className="text-sm font-bold text-slate-700">Daily Digest Emails</div>
+                  <div className="text-xs text-slate-500 mt-0.5">Summary of grievances resolved and campaign outreach metrics.</div>
+                </div>
+                <div className="relative">
+                  <input type="checkbox" className="sr-only peer" />
+                  <div className="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-500"></div>
+                </div>
+              </label>
+            </div>
+          </div>
+
+          <div>
+            <h3 className="text-sm font-bold text-slate-700 uppercase tracking-wider mb-5 border-b border-slate-100 pb-2">Security & Data</h3>
+            <div className="space-y-4">
+              <button type="button" className="text-sm text-red-600 hover:text-red-700 font-bold flex items-center gap-1 transition-colors">
+                <span className="material-symbols-outlined text-[18px]">delete_forever</span> Clear Local Storage Cache
+              </button>
+              <button type="button" className="text-sm text-slate-600 hover:text-slate-800 font-bold flex items-center gap-1 transition-colors">
+                <span className="material-symbols-outlined text-[18px]">download</span> Export Audit Logs (CSV)
+              </button>
+            </div>
+          </div>
+
+          <div className="pt-6 flex items-center justify-between border-t border-slate-100">
+            {saved ? (
+              <span className="text-emerald-600 font-bold text-sm flex items-center gap-1 animate-pulse">
+                <span className="material-symbols-outlined text-[18px]">check_circle</span> Settings saved successfully!
+              </span>
+            ) : <span className="text-xs text-slate-400">Settings are saved securely.</span>}
+            <button type="submit" className="bg-slate-900 hover:bg-slate-800 text-white font-bold py-3 px-8 rounded-lg transition-colors shadow-md flex items-center gap-2">
+              <span className="material-symbols-outlined text-[20px]">save</span> SAVE SETTINGS
             </button>
           </div>
         </form>
